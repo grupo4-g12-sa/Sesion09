@@ -8,8 +8,16 @@
  */
 const endpoint = "https://gc0313b709c117e-db202109241641.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/producto/producto"
 const etp=document.getElementById("info")
+const btn_show=document.getElementById("btn_show")
+const btn_save=document.getElementById("btn_save")
+const codprode=document.getElementById("codprod")
+const nomprode=document.getElementById("nomprod")
+const precioe=document.getElementById("precio")
+const inventarioe=document.getElementById("inventario")
+const btn_update=document.getElementById("btn_update")
+const btn_del=document.getElementById("btn_del")
 /**
- * peticion get de la api audiende
+ * peticion get de la api producto
  */
 
 function get_get(){
@@ -26,6 +34,7 @@ function get_get(){
     });
     //etp.innerHTML="Modifique desde JS"
 }
+
 /**
  * Función para mostrar productos
  */
@@ -49,15 +58,40 @@ function getProd(productos){
                 "<p>Inventario: "+producto.inventario+"</p>"
     });
     //return cadena
+    console.log(etp)
+    console.log(cadena)
     etp.innerHTML=cadena
 }
 /**
  * peticion POST de la api audiende
  */
+
+function capturaprod(){
+    
+    const data= {
+        codprod:codprode.value,
+        nomprod:nomprode.value,
+        precio:precioe.value,
+        inventario:inventarioe.value,
+    }
+    return JSON.stringify(data)
+}
+
+function show_answer(status){
+
+    if(status==201){
+        mensaje="Grabo con éxito"
+    }
+    else if (status==204){
+        mensaje="El registro ya existe"
+    }
+    alert(mensaje)
+}
+
 function get_post(){
 
-const data= {
-    codprod:"2",
+/**const data= {
+    codprod:"1",
     nomprod:"Coca-cola",
     precio:3500,
     inventario:14,
@@ -65,11 +99,12 @@ const data= {
 }
 
 let datasend=JSON.stringify(data)
+*/
     $.ajax({
         
         method:"POST",
         url: endpoint,
-        data:datasend,
+        data:capturaprod(),
         dataType:'json',
         contentType:"application/json",
         complete:function(response){
@@ -79,7 +114,7 @@ let datasend=JSON.stringify(data)
 }
 
 /**llamado a la función */
-get_get()//-- Traigo Info
+//get_get()//-- Traigo Info
 //get_post()-- Introduzco info
  
 function get_put(){
@@ -128,5 +163,22 @@ let datasend=JSON.stringify(data)
         }
     });
 }
+
+btn_show.addEventListener("click",(e)=>{
+    e.preventDefault()
+    get_get()
+})
+btn_save.addEventListener("click",(e)=>{
+    e.preventDefault()
+    get_post()
+})
+btn_update.addEventListener("click",(e)=>{
+    e.preventDefault()
+    get_put()
+})
+btn_del.addEventListener("click",(e)=>{
+    e.preventDefault()
+    get_del()
+})
 
 //get_del()//--EDITAR ACTUALIZAR
