@@ -8,14 +8,22 @@
  */
 const endpoint = "https://gc0313b709c117e-db202109241641.adb.sa-saopaulo-1.oraclecloudapps.com/ords/admin/producto/producto"
 const etp=document.getElementById("info")
+
+/**
+ * captura id boton
+ */
 const btn_show=document.getElementById("btn_show")
 const btn_save=document.getElementById("btn_save")
+const btn_update=document.getElementById("btn_update")
+const btn_del=document.getElementById("btn_del")
+/**
+ * Captura del input de la interfaz html 
+*/
 const codprode=document.getElementById("codprod")
 const nomprode=document.getElementById("nomprod")
 const precioe=document.getElementById("precio")
 const inventarioe=document.getElementById("inventario")
-const btn_update=document.getElementById("btn_update")
-const btn_del=document.getElementById("btn_del")
+
 /**
  * peticion get de la api producto
  */
@@ -50,14 +58,17 @@ function show_prod(productos){
 
 function getProd(productos){
     let cadena=""
-
+    if(productos.lenght==0){
+        cadena="No hay registros en la base de datos"
+    }
+    else{
     productos.forEach(producto=>{
         cadena+="<p>Codigo: "+producto.codprod+"</p>"+
                 "<p>Nombre: "+producto.nomprod+"</p>"+
                 "<p>Precio: "+producto.precio+"</p>"+
                 "<p>Inventario: "+producto.inventario+"</p>"
     });
-    //return cadena
+    }//return cadena
     console.log(etp)
     console.log(cadena)
     etp.innerHTML=cadena
@@ -77,10 +88,10 @@ function capturaprod(){
     return JSON.stringify(data)
 }
 
-function show_answer(status){
-
+function show_answer(status,texto){
+    let mensaje=""
     if(status==201){
-        mensaje="Grabo con éxito"
+        mensaje=texto
     }
     else if (status==204){
         mensaje="El registro ya existe"
@@ -108,17 +119,34 @@ let datasend=JSON.stringify(data)
         dataType:'json',
         contentType:"application/json",
         complete:function(response){
-            console.log(response.status)
+            show_answer(response.status,"Guardado con éxito")
+            cleanField()
         }
     });
 }
+function checkField(){
+    if(codprode.value=="" || nomprode.value=="" || precioe.value=="" || inventarioe.value==""){
+    return true
+}
+else{
+    return false
+}
+}
 
+function checkFieldDelete(){
+    if(codprode.value=="" ){
+    return true
+}
+else{
+    return false
+}
+}
 /**llamado a la función */
 //get_get()//-- Traigo Info
 //get_post()-- Introduzco info
  
 function get_put(){
-
+/**
 const data= {
     codprod:"2",
     nomprod:"CocaCola",
@@ -128,41 +156,60 @@ const data= {
 }
 
 let datasend=JSON.stringify(data)
+ */
     $.ajax({
         
         method:"PUT",
         url: endpoint,
-        data:datasend,
+        data:capturaprod(),
         dataType:'json',
         contentType:"application/json",
         complete:function(response){
-            console.log(response.status)
-            console.log("Actualizó registro")
+            show_answer(response.status,"Actualizó registro")
+            cleanField()
         }
     });
 }
 
 //get_put()//--EDITAR ACTUALIZAR
+function capturacodprod(){
+    
+    const data= {
+        codprod:codprode.value,
+    }
+    return JSON.stringify(data)
+}
+
+function show_answerdelete(status){
+    if (status==204){
+        alert("Registro Eliminado") 
+    }
+    alert(mensaje)
+}
 
 function get_del(){
 
-const data= {
-    codprod:"2",
-}
-
-let datasend=JSON.stringify(data)
     $.ajax({
         
         method:"DELETE",
         url: endpoint,
-        data:datasend,
+        data:capturacodprod(),
         dataType:'json',
         contentType:"application/json",
         complete:function(response){
-                    console.log("Elimino registro")
+                   show_answerdelete(response.status)
         }
     });
 }
+
+function cleanField(){
+    codprode.value=""
+    nomprode.value=""
+    precioe.value=""
+    inventarioe.value=""
+    codprode.focus()
+}
+
 
 btn_show.addEventListener("click",(e)=>{
     e.preventDefault()
@@ -170,15 +217,32 @@ btn_show.addEventListener("click",(e)=>{
 })
 btn_save.addEventListener("click",(e)=>{
     e.preventDefault()
-    get_post()
+    if(checkField()){
+        alert("Campos Vacíos")
+    }
+    else{
+        get_post()
+    }
+    
 })
 btn_update.addEventListener("click",(e)=>{
     e.preventDefault()
-    get_put()
+    if(checkField()){
+        alert("Campos Vacíos")
+    }
+    else{
+        get_put()
+    }
+    
 })
 btn_del.addEventListener("click",(e)=>{
     e.preventDefault()
-    get_del()
+    if(checkFieldDelete()){
+        alert ("Campo código vacío")
+    }
+    else{
+        get_del()
+    }
 })
 
 //get_del()//--EDITAR ACTUALIZAR
