@@ -184,7 +184,6 @@ function show_answerdelete(status){
     if (status==204){
         alert("Registro Eliminado") 
     }
-    alert(mensaje)
 }
 
 function get_del(){
